@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.avperm.TelegramSyncBotApi.model.TelegramUsers;
 import ru.avperm.TelegramSyncBotApi.service.CSUpdateDataService;
+import ru.avperm.TelegramSyncBotApi.service.LoginNotificationService;
 import ru.avperm.TelegramSyncBotApi.service.TelegramUserService;
 
 import java.util.ArrayList;
@@ -39,12 +40,16 @@ public class TelegramBot extends TelegramLongPollingBot {
     private TelegramUserService telegramUserService;
     @Autowired
     private CSUpdateDataService updateDataService;
+    @Autowired
+    private LoginNotificationService loginNotificationService;
 
 
-    public TelegramBot(TelegramUserService telegramUserService, CSUpdateDataService updateDataService) {
+    public TelegramBot(TelegramUserService telegramUserService, CSUpdateDataService updateDataService,
+                       LoginNotificationService loginNotificationService) {
 
         this.telegramUserService = telegramUserService;
         this.updateDataService = updateDataService;
+        this.loginNotificationService = loginNotificationService;
     }
 
     public String getBotToken() {
@@ -243,7 +248,30 @@ public class TelegramBot extends TelegramLongPollingBot {
         execute(message);
     }
 
-    @Scheduled(cron = "0 0 9,14 * * ?")
+    @Scheduled(cron = "0 * * * * ?")
+    public void smartcardNotification() {
+        String chatId = "@avpermrusync";
+
+        String result = loginNotificationService.checkNewNotification();
+
+        if (result != null) {
+            SendMessage pushMessage = new SendMessage();
+            pushMessage.setChatId(chatId)
+                    .setText(result)
+                    .enableHtml(true)
+                    .setParseMode(ParseMode.HTML)
+                    .enableWebPagePreview();
+            try {
+                execute(pushMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
+    @Scheduled(cron = "0 10 9,14 * * ?")
     public void channelNotification() {
         String chatId = "@avpermrusync";
 
