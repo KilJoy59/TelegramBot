@@ -646,7 +646,9 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
                 result = result.substring(0, result.length() - 2).concat(") " + nameAtp + " ( " + number + ", ");
             }
         }
-        result = result.substring(0, result.length() - 2).concat(" ).</pre> \n");
+        result = result.substring(0, result.length() - 2).concat(" ).</pre> \n")
+                .concat("Конец отчета по синхронизациям \n")
+                .concat(String.join("", Collections.nCopies(17, "\u2501"))).concat("\n");
         return result;
     }
 
@@ -702,7 +704,7 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
     }
 
     @Override
-    public String setNullOneRow(String code, String nameEntity) {
+    public String reloadOneEntityFromUpdateData(String code, String nameEntity) {
         String queryPull = "UPDATE TUPDATEDATA u SET u.DT_PUSH = null WHERE u.recipientNumber = :code AND u.entityName = :entityName";
         int resultUpdate = 0;
         try (
@@ -726,7 +728,7 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
     }
 
     @Override
-    public String setNullAllRows(String code) {
+    public String reloadAllEntitiesFromUpdateData(String code) {
         String queryPull = "UPDATE TUPDATEDATA u SET u.DT_PUSH = null WHERE u.recipientNumber = :code";
         int resultUpdate = 0;
         try (

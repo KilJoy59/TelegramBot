@@ -24,7 +24,7 @@ public interface CSUpdateDataService {
 
     String getOnlyNamesAllNotLoadedAwt();
 
-    String setNullOneRow(String code, String nameEntity);
+    String reloadOneEntityFromUpdateData(String code, String nameEntity);
 
-    String setNullAllRows(String code);
+    String reloadAllEntitiesFromUpdateData(String code);
 }
