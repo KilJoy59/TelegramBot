@@ -21,10 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Project SyncBotApi
- * Created by End on окт., 2020
- */
 @Service
 @AllArgsConstructor
 @Transactional
@@ -34,31 +30,9 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final EntityManagerFactory entityManagerFactory;
 
-    private static String editRowWithSpace(String string, int before, int length) {
-        string = "\u2503" + String.join("", Collections.nCopies(before, " ")) + string;
-        int stringLength = string.length();
-        int needLength = length - stringLength - 1;
-        String border = String.join("", Collections.nCopies(needLength, " "));
-        if (stringLength < length) {
-            string = string + border;
-        }
-        return string;
-    }
-
-    private static String editRowWithSpacelastColumn(String string, int before, int length) {
-        string = "\u2503" + String.join("", Collections.nCopies(before, " ")) + string;
-        int stringLength = string.length();
-        int needLength = length - stringLength - 1;
-        String border = String.join("", Collections.nCopies(needLength, " "));
-        if (stringLength < length) {
-            string = string + border + "\u2503";
-        }
-        return string;
-    }
-
     @Override
     public HashMap<String, String> getAllByCode(String code) {
-        String nameEntities = "";
+        StringBuilder nameEntities = new StringBuilder();
         HashMap<String, String> resultMap = new HashMap<>();
         String result = " ";
         String queryStr = "SELECT u.entityName as entityName, u.recipientNumber as recipientNumber, u.UPDATE_STATUS as updateDataStatus, " +
@@ -88,20 +62,18 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultList != null && !resultList.isEmpty()) {
-            resultList.forEach((p) -> {
-                syncList.add(CSUpdateData.builder()
-                        .entityName((String) p[0])
-                        .recipientNumber((String) p[1])
-                        .updateDataStatus((String) p[2])
-                        .datePull((Timestamp) p[3])
-                        .datePush((Timestamp) p[4])
-                        .recipientName((String) p[5])
-                        .build());
-            });
+            resultList.forEach((p) -> syncList.add(CSUpdateData.builder()
+                    .entityName((String) p[0])
+                    .recipientNumber((String) p[1])
+                    .updateDataStatus((String) p[2])
+                    .datePull((Timestamp) p[3])
+                    .datePush((Timestamp) p[4])
+                    .recipientName((String) p[5])
+                    .build()));
         }
 
         if (syncList.isEmpty()) {
-            resultMap.put("Список пуст", nameEntities);
+            resultMap.put("Список пуст", nameEntities.toString());
             return resultMap;
         }
 
@@ -112,7 +84,7 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
                 .concat(editRowWithSpace("справочник", 1, 18))
                 .concat(editRowWithSpace("начало загрузки", 1, 23))
                 .concat(editRowWithSpace("конец загрузки", 1, 23))
-                .concat(editRowWithSpacelastColumn("статус", 0, 8))
+                .concat(editRowWithSpaceLastColumn("статус", 0, 8))
                 .concat("</pre>").concat("\n")
                 .concat("<pre>")
                 .concat(String.join("", Collections.nCopies(69, "\u2501")))
@@ -122,7 +94,7 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
             String entityName = data.getEntityName() == null
                     ? "null"
                     : data.getEntityName();
-            nameEntities += entityName + ",";
+            nameEntities.append(entityName).append(",");
             String datePull = data.getDatePull() == null
                     ? "null"
                     : sdf.format(data.getDatePull());
@@ -137,14 +109,14 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
                     .concat(editRowWithSpace(entityName, 1, 18))
                     .concat(editRowWithSpace(datePull, 1, 23))
                     .concat(editRowWithSpace(datePush, 1, 23))
-                    .concat(editRowWithSpacelastColumn(status, 1, 8))
+                    .concat(editRowWithSpaceLastColumn(status, 1, 8))
                     .concat("</pre>").concat("\n");
         }
         result = result.concat("<pre>").concat(String.join("", Collections.nCopies(69, "\u2501"))).concat("</pre>")
                 .concat("<b>Выберите справочник для повторной выгрузки:</b>");
-        nameEntities = nameEntities.substring(0, nameEntities.length() - 1);
+        nameEntities = new StringBuilder(nameEntities.substring(0, nameEntities.length() - 1));
         log.debug(" СТРОКА " + nameEntities);
-        resultMap.put(result, nameEntities);
+        resultMap.put(result, nameEntities.toString());
         return resultMap;
     }
 
@@ -180,16 +152,14 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultList != null && !resultList.isEmpty()) {
-            resultList.forEach((p) -> {
-                syncList.add(CSUpdateData.builder()
-                        .entityName((String) p[0])
-                        .recipientNumber((String) p[1])
-                        .updateDataStatus((String) p[2])
-                        .datePull((Timestamp) p[3])
-                        .datePush((Timestamp) p[4])
-                        .recipientName((String) p[5])
-                        .build());
-            });
+            resultList.forEach((p) -> syncList.add(CSUpdateData.builder()
+                    .entityName((String) p[0])
+                    .recipientNumber((String) p[1])
+                    .updateDataStatus((String) p[2])
+                    .datePull((Timestamp) p[3])
+                    .datePush((Timestamp) p[4])
+                    .recipientName((String) p[5])
+                    .build()));
         }
 
         if (syncList.isEmpty()) {
@@ -202,36 +172,25 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
                 .concat(editRowWithSpace("код или название", 1, 22))
                 .concat(editRowWithSpace("начало загрузки", 1, 22))
                 .concat(editRowWithSpace("конец загрузки", 1, 22))
-                .concat(editRowWithSpacelastColumn("статус", 0, 8))
+                .concat(editRowWithSpaceLastColumn("статус", 0, 8))
                 .concat("</pre>").concat("\n")
                 .concat("<pre>")
                 .concat(String.join("", Collections.nCopies(88, "\u2501")))
                 .concat("</pre>").concat("\n");
 
         for (CSUpdateData data : syncList) {
-            String entityName = data.getEntityName() == null
-                    ? "null"
-                    : data.getEntityName();
-            String nameAwt =
-                    data.getRecipientName() == null
-                            ? data.getRecipientNumber()
-                            : data.getRecipientName();
-            String datePull = data.getDatePull() == null
-                    ? "null"
-                    : sdf.format(data.getDatePull());
-            String datePush = data.getDatePush() == null
-                    ? "null"
-                    : sdf.format(data.getDatePush());
-            String status = data.getUpdateDataStatus() == null
-                    ? "null"
-                    : data.getUpdateDataStatus();
+            String entityName = data.getEntityName() == null ? "null" : data.getEntityName();
+            String nameAwt = data.getRecipientName() == null ? data.getRecipientNumber() : data.getRecipientName();
+            String datePull = data.getDatePull() == null ? "null" : sdf.format(data.getDatePull());
+            String datePush = data.getDatePush() == null ? "null" : sdf.format(data.getDatePush());
+            String status = data.getUpdateDataStatus() == null ? "null" : data.getUpdateDataStatus();
 
             result = result.concat("<pre>")
                     .concat(editRowWithSpace(entityName, 1, 18))
                     .concat(editRowWithSpace(nameAwt, 0, 22))
                     .concat(editRowWithSpace(datePull, 0, 22))
                     .concat(editRowWithSpace(datePush, 0, 22))
-                    .concat(editRowWithSpacelastColumn(status, 1, 8))
+                    .concat(editRowWithSpaceLastColumn(status, 1, 8))
                     .concat("</pre>").concat("\n");
         }
         result = result.concat("<pre>").concat(String.join("", Collections.nCopies(88, "\u2501")))
@@ -272,16 +231,14 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultList != null && !resultList.isEmpty()) {
-            resultList.forEach((p) -> {
-                syncList.add(CSUpdateData.builder()
-                        .entityName((String) p[0])
-                        .recipientNumber((String) p[1])
-                        .updateDataStatus((String) p[2])
-                        .datePull((Timestamp) p[3])
-                        .datePush((Timestamp) p[4])
-                        .recipientName((String) p[5])
-                        .build());
-            });
+            resultList.forEach((p) -> syncList.add(CSUpdateData.builder()
+                    .entityName((String) p[0])
+                    .recipientNumber((String) p[1])
+                    .updateDataStatus((String) p[2])
+                    .datePull((Timestamp) p[3])
+                    .datePush((Timestamp) p[4])
+                    .recipientName((String) p[5])
+                    .build()));
         }
 
         if (syncList.isEmpty()) {
@@ -294,35 +251,25 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
                 .concat(editRowWithSpace("код или название", 1, 22))
                 .concat(editRowWithSpace("начало загрузки", 1, 22))
                 .concat(editRowWithSpace("конец загрузки", 1, 22))
-                .concat(editRowWithSpacelastColumn("статус", 0, 8))
+                .concat(editRowWithSpaceLastColumn("статус", 0, 8))
                 .concat("</pre>").concat("\n")
                 .concat("<pre>")
                 .concat(String.join("", Collections.nCopies(88, "\u2501")))
                 .concat("</pre>").concat("\n");
 
         for (CSUpdateData data : syncList) {
-            String entityName = data.getEntityName() == null
-                    ? "null"
-                    : data.getEntityName();
-            String nameAwt = data.getRecipientName() == null
-                    ? data.getRecipientNumber()
-                    : data.getRecipientName();
-            String datePull = data.getDatePull() == null
-                    ? "null"
-                    : sdf.format(data.getDatePull());
-            String datePush = data.getDatePush() == null
-                    ? "null"
-                    : sdf.format(data.getDatePush());
-            String status = data.getUpdateDataStatus() == null
-                    ? "null"
-                    : data.getUpdateDataStatus();
+            String entityName = (data.getEntityName() == null ? "null" : data.getEntityName());
+            String nameAwt = (data.getRecipientName() == null ? data.getRecipientNumber() : data.getRecipientName());
+            String datePull = (data.getDatePull() == null ? "null" : sdf.format(data.getDatePull()));
+            String datePush = (data.getDatePush() == null ? "null" : sdf.format(data.getDatePush()));
+            String status = (data.getUpdateDataStatus() == null ? "null" : data.getUpdateDataStatus());
 
             result = result.concat("<pre>")
                     .concat(editRowWithSpace(entityName, 1, 18))
                     .concat(editRowWithSpace(nameAwt, 0, 22))
                     .concat(editRowWithSpace(datePull, 0, 22))
                     .concat(editRowWithSpace(datePush, 0, 22))
-                    .concat(editRowWithSpacelastColumn(status, 1, 8))
+                    .concat(editRowWithSpaceLastColumn(status, 1, 8))
                     .concat("</pre>").concat("\n");
         }
         result = result.concat("<pre>").concat(String.join("", Collections.nCopies(88, "\u2501")))
@@ -358,12 +305,10 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultList != null && !resultList.isEmpty()) {
-            resultList.forEach((p) -> {
-                syncList.add(AwtList.builder()
-                        .recipientNumber((String) p[0])
-                        .recipientName((String) p[1])
-                        .build());
-            });
+            resultList.forEach((p) -> syncList.add(AwtList.builder()
+                    .recipientNumber((String) p[0])
+                    .recipientName((String) p[1])
+                    .build()));
         }
 
         if (syncList.isEmpty()) {
@@ -373,7 +318,7 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
                 .concat(" Список вокзалов").concat("\n")
                 .concat(String.join("", Collections.nCopies(31, "\u2501"))).concat("\n")
                 .concat(editRowWithSpace("код", 1, 8))
-                .concat(editRowWithSpacelastColumn("название", 1, 25))
+                .concat(editRowWithSpaceLastColumn("название", 1, 25))
                 .concat("</pre>").concat("\n")
                 .concat("<pre>")
                 .concat(String.join("", Collections.nCopies(31, "\u2501")))
@@ -381,16 +326,12 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
 
         for (AwtList data : syncList) {
 
-            String codeAwt = data.getRecipientNumber() == null
-                    ? "null"
-                    : data.getRecipientNumber();
-            String nameAwt = data.getRecipientName() == null
-                    ? "null"
-                    : data.getRecipientName();
+            String codeAwt = (data.getRecipientNumber() == null ? "null" : data.getRecipientNumber());
+            String nameAwt = (data.getRecipientName() == null ? "null" : data.getRecipientName());
 
             result = result.concat("<pre>")
                     .concat(editRowWithSpace(codeAwt, 1, 8))
-                    .concat(editRowWithSpacelastColumn(nameAwt, 1, 25))
+                    .concat(editRowWithSpaceLastColumn(nameAwt, 1, 25))
                     .concat("</pre>").concat("\n");
         }
         result = result.concat("<pre>").concat(String.join("", Collections.nCopies(31, "\u2501")))
@@ -424,12 +365,10 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultPullList != null && !resultPullList.isEmpty()) {
-            resultPullList.forEach((p) -> {
-                pullList.add(AwtList.builder()
-                        .recipientNumber((String) p[0])
-                        .recipientName((String) p[1])
-                        .build());
-            });
+            resultPullList.forEach((p) -> pullList.add(AwtList.builder()
+                    .recipientNumber((String) p[0])
+                    .recipientName((String) p[1])
+                    .build()));
         }
 
         String queryPush = "SELECT DISTINCT u.recipientNumber as recipientNumber, s.name as recipientName FROM TUPDATEDATA u " +
@@ -454,12 +393,10 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultPushList != null && !resultPushList.isEmpty()) {
-            resultPushList.forEach((p) -> {
-                pushList.add(AwtList.builder()
-                        .recipientNumber((String) p[0])
-                        .recipientName((String) p[1])
-                        .build());
-            });
+            resultPushList.forEach((p) -> pushList.add(AwtList.builder()
+                    .recipientNumber((String) p[0])
+                    .recipientName((String) p[1])
+                    .build()));
         }
 
         //список кодов с ошибками синхронизации
@@ -474,10 +411,8 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         result = result.concat("<b> Список вокзалов со статусом 'Push' которые сегодня не обновлялись. </b> <pre>").concat("\n");
 
         for (AwtList list : mergeList) {
-            String name = list.getRecipientName() == null
-                    ? "" : list.getRecipientName();
-            String number = list.getRecipientNumber() == null
-                    ? "" : list.getRecipientNumber();
+            String name = (list.getRecipientName() == null ? "" : list.getRecipientName());
+            String number = (list.getRecipientNumber() == null ? "" : list.getRecipientNumber());
             if (list.getRecipientName() != null) {
                 result = result.concat(number).concat(" " + name + ", ");
             }
@@ -517,13 +452,11 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultPullList != null && !resultPullList.isEmpty()) {
-            resultPullList.forEach((p) -> {
-                pullList.add(CSTerminalDto.builder()
-                        .recipientNumber((String) p[0])
-                        .idAtp((Integer) p[1])
-                        .nameAtp((String) p[2])
-                        .build());
-            });
+            resultPullList.forEach((p) -> pullList.add(CSTerminalDto.builder()
+                    .recipientNumber((String) p[0])
+                    .idAtp((Integer) p[1])
+                    .nameAtp((String) p[2])
+                    .build()));
         }
 
         String queryPush = "SELECT DISTINCT u.recipientNumber as recipientNumber, t.IDATP as idAtp, atp.NAME as nameAtp FROM TUPDATEDATA u \n" +
@@ -551,13 +484,11 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultPushList != null && !resultPushList.isEmpty()) {
-            resultPushList.forEach((p) -> {
-                pushList.add(CSTerminalDto.builder()
-                        .recipientNumber((String) p[0])
-                        .idAtp((Integer) p[1])
-                        .nameAtp((String) p[2])
-                        .build());
-            });
+            resultPushList.forEach((p) -> pushList.add(CSTerminalDto.builder()
+                    .recipientNumber((String) p[0])
+                    .idAtp((Integer) p[1])
+                    .nameAtp((String) p[2])
+                    .build()));
         }
 
         //список кодов с ошибками синхронизации
@@ -572,17 +503,14 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         result = result.concat("<b> Список терминалов со статусом 'Push' которые сегодня не обновлялись. </b> <pre>").concat("\n");
 
         for (int i = 0; i < mergeList.size(); i++) {
-            String number = mergeList.get(i).getRecipientNumber() == null
-                    ? "" : mergeList.get(i).getRecipientNumber();
-            Integer idAtp = mergeList.get(i).getIdAtp() == null
-                    ? 0 : mergeList.get(i).getIdAtp();
-            String nameAtp = mergeList.get(i).getNameAtp() == null
-                    ? "Нет названия" : mergeList.get(i).getNameAtp();
+            String number = (mergeList.get(i).getRecipientNumber() == null ? "" : mergeList.get(i).getRecipientNumber());
+            Integer idAtp = (mergeList.get(i).getIdAtp() == null ? 0 : mergeList.get(i).getIdAtp());
+            String nameAtp = (mergeList.get(i).getNameAtp() == null ? "Нет названия" : mergeList.get(i).getNameAtp());
             if (i == 0) {
                 result = result.concat(nameAtp + " ( " + number + ", ");
-            } else if (i != 0 && idAtp.equals(mergeList.get(i - 1).getIdAtp())) {
+            } else if (idAtp.equals(mergeList.get(i - 1).getIdAtp())) {
                 result = result.concat(number + ", ");
-            } else if (i != 0 && !idAtp.equals(mergeList.get(i - 1).getIdAtp())) {
+            } else if (!idAtp.equals(mergeList.get(i - 1).getIdAtp())) {
                 result = result.substring(0, result.length() - 2).concat(") " + nameAtp + " ( " + number + ", ");
             }
             log.debug("RESULT " + result);
@@ -620,29 +548,24 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultPullList != null && !resultPullList.isEmpty()) {
-            resultPullList.forEach((p) -> {
-                pullList.add(CSTerminalDto.builder()
-                        .recipientNumber((String) p[0])
-                        .idAtp((Integer) p[1])
-                        .nameAtp((String) p[2])
-                        .build());
-            });
+            resultPullList.forEach((p) -> pullList.add(CSTerminalDto.builder()
+                    .recipientNumber((String) p[0])
+                    .idAtp((Integer) p[1])
+                    .nameAtp((String) p[2])
+                    .build()));
         }
 
         result = result.concat("<b> Список терминалов на которых есть ошибки синхронизации. </b> <pre>").concat("\n");
 
         for (int i = 0; i < pullList.size(); i++) {
-            String number = pullList.get(i).getRecipientNumber() == null
-                    ? "" : pullList.get(i).getRecipientNumber();
-            Integer idAtp = pullList.get(i).getIdAtp() == null
-                    ? 0 : pullList.get(i).getIdAtp();
-            String nameAtp = pullList.get(i).getNameAtp() == null
-                    ? "Нет названия" : pullList.get(i).getNameAtp();
+            String number = (pullList.get(i).getRecipientNumber() == null ? "" : pullList.get(i).getRecipientNumber());
+            Integer idAtp = (pullList.get(i).getIdAtp() == null ? 0 : pullList.get(i).getIdAtp());
+            String nameAtp = (pullList.get(i).getNameAtp() == null ? "Нет названия" : pullList.get(i).getNameAtp());
             if (i == 0) {
                 result = result.concat(nameAtp + " ( " + number + ", ");
-            } else if (i != 0 && idAtp.equals(pullList.get(i - 1).getIdAtp())) {
+            } else if (idAtp.equals(pullList.get(i - 1).getIdAtp())) {
                 result = result.concat(number + ", ");
-            } else if (i != 0 && !idAtp.equals(pullList.get(i - 1).getIdAtp())) {
+            } else if (!idAtp.equals(pullList.get(i - 1).getIdAtp())) {
                 result = result.substring(0, result.length() - 2).concat(") " + nameAtp + " ( " + number + ", ");
             }
         }
@@ -679,21 +602,17 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         }
 
         if (resultPullList != null && !resultPullList.isEmpty()) {
-            resultPullList.forEach((p) -> {
-                pullList.add(AwtList.builder()
-                        .recipientNumber((String) p[0])
-                        .recipientName((String) p[1])
-                        .build());
-            });
+            resultPullList.forEach((p) -> pullList.add(AwtList.builder()
+                    .recipientNumber((String) p[0])
+                    .recipientName((String) p[1])
+                    .build()));
         }
 
         result = result.concat("<b> Список вокзалов на которых есть ошибки синхронизации. </b> <pre>").concat("\n");
 
         for (AwtList list : pullList) {
-            String name = list.getRecipientName() == null
-                    ? "" : list.getRecipientName();
-            String number = list.getRecipientNumber() == null
-                    ? "" : list.getRecipientNumber();
+            String name = (list.getRecipientName() == null ? "" : list.getRecipientName());
+            String number = (list.getRecipientNumber() == null ? "" : list.getRecipientNumber());
             if (list.getRecipientName() != null) {
                 result = result.concat(number).concat(" " + name + ", ");
             }
@@ -733,7 +652,6 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
         int resultUpdate = 0;
         try (
                 Session openSession = entityManagerFactory.unwrap(SessionFactory.class).openSession()) {
-
             openSession.getTransaction().begin();
             resultUpdate = openSession.createNativeQuery(queryPull)
                     .setParameter("code", code)
@@ -749,4 +667,27 @@ public class CSUpdateDataServiceImpl implements CSUpdateDataService {
             return "Неуспешно";
         }
     }
+
+    private static String editRowWithSpace(String string, int before, int length) {
+        string = "\u2503" + String.join("", Collections.nCopies(before, " ")) + string;
+        int stringLength = string.length();
+        int needLength = length - stringLength - 1;
+        String border = String.join("", Collections.nCopies(needLength, " "));
+        if (stringLength < length) {
+            string = string + border;
+        }
+        return string;
+    }
+
+    private static String editRowWithSpaceLastColumn(String string, int before, int length) {
+        string = "\u2503" + String.join("", Collections.nCopies(before, " ")) + string;
+        int stringLength = string.length();
+        int needLength = length - stringLength - 1;
+        String border = String.join("", Collections.nCopies(needLength, " "));
+        if (stringLength < length) {
+            string = string + border + "\u2503";
+        }
+        return string;
+    }
+
 }

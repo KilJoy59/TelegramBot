@@ -6,10 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.ApiContextInitializer;
 
-/**
- * Project SyncBotApi
- * Created by End on окт., 2020
- */
 @SpringBootApplication
 @EnableAutoConfiguration
 @EnableScheduling

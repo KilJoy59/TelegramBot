@@ -6,11 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-/**
- * Project SyncBotApi
- * Created by End on окт., 2020
- */
-
 @Entity
 @Table(name = "telegram_users")
 @Data

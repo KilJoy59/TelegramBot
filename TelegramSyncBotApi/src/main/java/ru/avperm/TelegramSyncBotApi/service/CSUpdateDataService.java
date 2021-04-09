@@ -2,10 +2,6 @@ package ru.avperm.TelegramSyncBotApi.service;
 
 import java.util.HashMap;
 
-/**
- * Project SyncBotApi
- * Created by End on окт., 2020
- */
 public interface CSUpdateDataService {
 
     HashMap<String, String> getAllByCode(String code);

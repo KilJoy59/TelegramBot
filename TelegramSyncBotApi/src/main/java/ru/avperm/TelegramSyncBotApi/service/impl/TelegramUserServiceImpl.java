@@ -7,11 +7,6 @@ import ru.avperm.TelegramSyncBotApi.model.TelegramUsers;
 import ru.avperm.TelegramSyncBotApi.repository.TelegramUserRepository;
 import ru.avperm.TelegramSyncBotApi.service.TelegramUserService;
 
-/**
- * Project SyncBotApi
- * Created by End on окт., 2020
- */
-
 @Service
 @AllArgsConstructor
 public class TelegramUserServiceImpl implements TelegramUserService {

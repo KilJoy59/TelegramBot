@@ -6,11 +6,6 @@ import lombok.Data;
 
 import java.util.Date;
 
-/**
- * Project SyncBotApi
- * Created by End on окт., 2020
- */
-
 @Data
 @AllArgsConstructor
 @Builder

@@ -6,11 +6,6 @@ import lombok.Data;
 
 import java.util.Date;
 
-/**
- * Project TelegramSyncBotApi
- * Created by End on окт., 2020
- */
-
 @Data
 @AllArgsConstructor
 @Builder

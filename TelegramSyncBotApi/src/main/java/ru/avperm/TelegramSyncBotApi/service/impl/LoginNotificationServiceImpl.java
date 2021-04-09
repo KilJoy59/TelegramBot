@@ -16,11 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Project TelegramSyncBotApi
- * Created by End on окт., 2020
- */
-
 @Service
 
 public class LoginNotificationServiceImpl implements LoginNotificationService {
