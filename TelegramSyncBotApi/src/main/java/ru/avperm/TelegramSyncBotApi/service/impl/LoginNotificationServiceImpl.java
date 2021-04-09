@@ -1,7 +1,5 @@
 package ru.avperm.TelegramSyncBotApi.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.type.StandardBasicTypes;
@@ -10,12 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.avperm.TelegramSyncBotApi.model.LoginNotification;
 import ru.avperm.TelegramSyncBotApi.model.PrimaryRace;
-import ru.avperm.TelegramSyncBotApi.model.TelegramMemory;
-import ru.avperm.TelegramSyncBotApi.repository.TelegramMemoryRepository;
 import ru.avperm.TelegramSyncBotApi.service.LoginNotificationService;
 
 import javax.persistence.EntityManagerFactory;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,13 +30,11 @@ public class LoginNotificationServiceImpl implements LoginNotificationService {
 
     private final EntityManagerFactory entityManagerFactory;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private final TelegramMemoryRepository telegramMemoryRepository;
 
 
     @Autowired
-    public LoginNotificationServiceImpl(EntityManagerFactory entityManagerFactory, TelegramMemoryRepository telegramMemoryRepository) {
+    public LoginNotificationServiceImpl(EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
-        this.telegramMemoryRepository = telegramMemoryRepository;
     }
 
     @Override

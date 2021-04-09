@@ -268,20 +268,6 @@ public class TelegramBotController extends TelegramLongPollingBot {
         }
     }
 
- /*   @Scheduled(cron = "0 * * * * ?")
-    public void smartCardDataBaseNotification() {
-        String chatId = "@avpermrusync";
-        String text = loginNotificationService.checkNewNotification();
-        if (text != null) {
-            SendMessage message = createHtmlMessageForSchedule(chatId, text);
-            try {
-                execute(message);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
-
     @Scheduled(cron = "0 40 9,14 * * ?")
     public void channelNotification() {
         String chatId = "@avpermrusync";
